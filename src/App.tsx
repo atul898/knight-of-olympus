@@ -15,6 +15,7 @@ const initialGameState: GameState = {
     score: 0,
     athenCoins: 0,
     level: 1,
+    lightningBolts: 0,
     weapons: [],
     powers: []
   },

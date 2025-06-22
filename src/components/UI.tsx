@@ -84,7 +84,9 @@ function UI({ gameState, setGameState, startGame }: UIProps) {
         </button>
 
         <div style={{ marginTop: '2rem', textAlign: 'center', fontSize: '0.9rem' }}>
-          <p>🎮 Use WASD to move • Space to shoot • Q for magic spells</p>
+          <p>🎮 <strong>Controls:</strong></p>
+          <p>W = Move Forward • A = Move Left • S = Move Back • D = Move Right</p>
+          <p>Space = Shoot Magic Arrows • Q = Cast Spells (coming soon!)</p>
           <p>📱 Mobile friendly with touch controls</p>
         </div>
       </div>
@@ -118,6 +120,7 @@ function UI({ gameState, setGameState, startGame }: UIProps) {
           <div>⚔️ {gameState.playerName}</div>
           <div>❤️ Health: {gameState.player.health}/{gameState.player.maxHealth}</div>
           <div>🏆 Score: {gameState.player.score}</div>
+          <div>⚡ Lightning Bolts: {gameState.player.lightningBolts}</div>
           <div>🪙 Athena Coins: {gameState.player.athenCoins}</div>
           <div>🌊 Wave: {gameState.wave}</div>
         </div>

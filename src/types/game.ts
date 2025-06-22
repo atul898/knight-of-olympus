@@ -7,6 +7,7 @@ export interface Player {
   score: number;
   athenCoins: number;
   level: number;
+  lightningBolts: number; // How many lightning bolts the player has collected
   weapons: Weapon[];
   powers: Power[];
 }

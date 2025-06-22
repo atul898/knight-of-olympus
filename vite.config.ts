@@ -5,7 +5,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     host: true, // Enable network access for mobile testing
-    port: 3000
+    port: 5173
   },
   build: {
     outDir: 'dist',

@@ -2,8 +2,10 @@ import React, { useRef, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Mesh } from 'three';
 import { GameState } from '../types/game';
-import Knight from './Knight';
+import RealisticKnight from './RealisticKnight';
 import Environment from './Environment';
+import LightningBolt from './LightningBolt';
+import { spawnLightningBolts, checkCollisions } from '../utils/gameLogic';
 
 interface GameProps {
   gameState: GameState;
@@ -12,6 +14,18 @@ interface GameProps {
 
 function Game({ gameState, setGameState }: GameProps) {
   const gameRef = useRef<Mesh>(null);
+
+  // Spawn lightning bolts when the game starts
+  useEffect(() => {
+    if (gameState.phase === 'playing' && gameState.collectibles.length === 0) {
+      // Only spawn lightning bolts if we don't have any collectibles yet
+      const lightningBolts = spawnLightningBolts(8); // Spawn 8 lightning bolts
+      setGameState(prev => ({
+        ...prev,
+        collectibles: lightningBolts
+      }));
+    }
+  }, [gameState.phase, setGameState]);
 
   // Game loop
   useFrame((state, delta) => {
@@ -22,25 +36,46 @@ function Game({ gameState, setGameState }: GameProps) {
         timeElapsed: prev.timeElapsed + delta
       }));
 
-      // TODO: Update enemies, handle collisions, spawn collectibles
+      // Check for collisions with lightning bolts
+      const updatedGameState = checkCollisions(gameState);
+      if (updatedGameState !== gameState) {
+        setGameState(updatedGameState);
+      }
     }
   });
+
+  // Function to handle collecting a lightning bolt manually (for testing)
+  const handleCollectLightningBolt = (lightningBoltId: string) => {
+    setGameState(prev => ({
+      ...prev,
+      collectibles: prev.collectibles.map(collectible =>
+        collectible.id === lightningBoltId
+          ? { ...collectible, collected: true }
+          : collectible
+      ),
+      player: {
+        ...prev.player,
+        lightningBolts: prev.player.lightningBolts + 1,
+        score: prev.player.score + 10
+      }
+    }));
+  };
 
   return (
     <group ref={gameRef}>
       {/* Environment (Greek temple, pillars, etc.) */}
       <Environment />
       
-      {/* Player Knight */}
+      {/* Player Knight - Using professional Sketchfab model! */}
       {gameState.phase === 'playing' && (
-        <Knight 
-          position={gameState.player.position} 
+        <RealisticKnight 
+          position={gameState.player.position}
           gameState={gameState}
           setGameState={setGameState}
         />
       )}
 
-      {/* Test Objects for now */}
+      {/* Ground and Game Objects */}
       {gameState.phase === 'playing' && (
         <>
           {/* Ground plane */}
@@ -49,11 +84,14 @@ function Game({ gameState, setGameState }: GameProps) {
             <meshStandardMaterial color="#8B7D6B" />
           </mesh>
 
-          {/* Test cube */}
-          <mesh position={[3, 0, 0]}>
-            <boxGeometry args={[1, 1, 1]} />
-            <meshStandardMaterial color="#FFD700" />
-          </mesh>
+          {/* Lightning Bolts - Collectible power-ups scattered around! */}
+          {gameState.collectibles.map(collectible => (
+            <LightningBolt
+              key={collectible.id}
+              collectible={collectible}
+              onCollect={handleCollectLightningBolt}
+            />
+          ))}
         </>
       )}
     </group>
